@@ -19,7 +19,6 @@ type ReviewForPost struct {
 }
 
 type ReviewForUpdate struct {
-	MedicineID *uint   `json:"medicine_id"`
 	Rating     *uint   `json:"rating"`
 	Text       *string `json:"text"`
 }
