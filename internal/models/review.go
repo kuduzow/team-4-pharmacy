@@ -13,14 +13,12 @@ type Review struct {
 }
 
 type ReviewForPost struct {
-	UserID     uint   `json:"user_id"`
 	MedicineID uint   `json:"medicine_id"`
 	Rating     uint   `json:"rating"`
 	Text       string `json:"text"`
 }
 
 type ReviewForUpdate struct {
-	UserID     *uint   `json:"user_id"`
 	MedicineID *uint   `json:"medicine_id"`
 	Rating     *uint   `json:"rating"`
 	Text       *string `json:"text"`
