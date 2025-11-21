@@ -11,6 +11,7 @@ type Subcategory struct {
 	gorm.Model
 	CategoryID uint   `json:"category_id"`
 	Name       string `json:"name"`
+	Category   Category `json:"category" gorm:"foreignKey:CategoryID"`
 }
 
 type CreateCategory struct {
