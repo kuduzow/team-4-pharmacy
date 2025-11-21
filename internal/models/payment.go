@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type Status string
 
 type Method string
@@ -17,7 +19,7 @@ const (
 )
 
 type Payment struct {
-	gorm.models
+	gorm.Model
 	OrderID int    `json:"order_ID"`
 	Amount  int    `json:"amount"`
 	Status  Status `json:"-"`
