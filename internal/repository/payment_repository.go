@@ -8,7 +8,7 @@ import (
 type PaymentRepository interface {
 	Create(payment *models.Payment) error
 
-	GetByID(id uint) error
+	GetByID(id uint) (*models.Payment,error)
 
 	Update(payment *models.Payment) error
 
@@ -29,13 +29,13 @@ func (r *gormPaymentRepository) Create(payment *models.Payment) error {
 	}
 	return r.db.Create(payment).Error
 }
-func (r *gormPaymentRepository) GetByID(id uint) error {
+func (r *gormPaymentRepository) GetByID(id uint)(*models.Payment,error)  {
 	var payment models.Payment
 
 	if err := r.db.First(&payment, id).Error; err != nil {
-		return err
+		return nil,err
 	}
-	return nil
+	return &payment,nil 
 }
 
 func (r *gormPaymentRepository) Update(payment *models.Payment) error {
