@@ -16,6 +16,7 @@ type ModelService interface {
 	DeleteReview(id uint) error
 	ListByMedicineID(medicineID uint) ([]models.Review, error)
 	GetAvgRating(medicineID uint) (float64, error)
+	GetByID(id uint) (*models.Review, error)
 }
 
 type ReviewService struct {
@@ -108,4 +109,17 @@ func (s *ReviewService) GetAvgRating(medicineID uint) (float64, error) {
 
 	return avg, nil
 
+}
+
+func (s *ReviewService) GetByID(id uint) (*models.Review, error) {
+	review, err := s.repo.GetByID(id)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ReviewNotFound
+		}
+		return nil, err
+	}
+
+	return review, nil
 }
