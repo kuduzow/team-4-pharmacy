@@ -137,15 +137,5 @@ func (s *promocodeService) ValidateCreatePromocode(req models.PromocodeCreateReq
 		return errors.New("промокод не активен")
 	}
 
-	now := time.Now()
-
-	if now.Before(req.ValidFrom) {
-		return errors.New("промокод еще не действует")
-	}
-
-	if now.After(req.ValidTo) {
-		return errors.New("промокод Истек")
-	}
-
 	return nil
 }
