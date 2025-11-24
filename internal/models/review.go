@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 package models
 
 import (
@@ -25,4 +23,3 @@ type ReviewForUpdate struct {
 	Rating *uint   `json:"rating"`
 	Text   *string `json:"text"`
 }
->>>>>>> 6ef08ef05f598c9ed5de0f70de6984d0a7880013
