@@ -13,6 +13,8 @@ type PromocodeRepository interface {
 	Delete(id uint) error
 
 	Update(promocode *models.Promocode) error
+
+	GetByID(id uint) (*models.Promocode, error)
 }
 
 type gormPromocodeRepository struct {
@@ -56,4 +58,14 @@ func (r *gormPromocodeRepository) Update(promocode *models.Promocode) error {
 	}
 
 	return r.db.Save(&promocode).Error
+}
+
+func (r *gormPromocodeRepository) GetByID(id uint) (*models.Promocode, error) {
+	var promocode models.Promocode
+
+	if err := r.db.First(&promocode).Error; err != nil {
+		return nil, err
+	}
+
+	return &promocode, nil
 }
