@@ -63,7 +63,7 @@ func (r *gormPromocodeRepository) Update(promocode *models.Promocode) error {
 func (r *gormPromocodeRepository) GetByID(id uint) (*models.Promocode, error) {
 	var promocode models.Promocode
 
-	if err := r.db.First(&promocode).Error; err != nil {
+	if err := r.db.First(&promocode, id).Error; err != nil {
 		return nil, err
 	}
 
