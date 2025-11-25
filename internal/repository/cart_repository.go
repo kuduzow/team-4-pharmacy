@@ -13,8 +13,6 @@ type CartRepository interface {
 	GetByUserID(userID uint) (*models.Cart, error)
 
 	ClearByUserID(userID uint) error
-
-	GetItemsByCartID(cartID uint) ([]models.CartItem, error)
 }
 
 type gormCartRepository struct {
@@ -50,14 +48,4 @@ func (r *gormCartRepository) ClearByUserID(userID uint) error {
 		return err
 	}
 	return r.db.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{}).Error
-}
-
-func (r *gormCartRepository) GetItemsByCartID(cartID uint) ([]models.CartItem, error) {
-
-	var items []models.CartItem
-
-	if err := r.db.Where("cart_id = ?", cartID).Find(&items).Error; err != nil {
-		return nil, err
-	}
-	return items, nil
 }
