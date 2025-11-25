@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrMedicineNotFound = errors.New("Лекарство не найдено")
+var ErrMedicineNotFound = errors.New("лекарство не найдено")
 
 type MedicineService interface {
 	CreateMedicine(req models.MedicineCreateRequest) (*models.Medicine, error)
@@ -20,20 +20,21 @@ type MedicineService interface {
 
 	DeleteMedicine(id uint) error
 
-	GetAllMedicines() ([]models.Medicine, error)
-
-	GetInStockMedicines() ([]models.Medicine, error)
+	ListMedicines(filter repository.MedicineFilter) ([]models.Medicine, error)
 }
 
 type medicineService struct {
-	medicines repository.MedicineRepository
+	medicines  repository.MedicineRepository
+	categories repository.CategoryRepository
 }
 
 func NewMedicineService(
 	medicines repository.MedicineRepository,
+	categories repository.CategoryRepository,
 ) MedicineService {
 	return &medicineService{
-		medicines: medicines,
+		medicines:  medicines,
+		categories: categories,
 	}
 }
 
@@ -109,12 +110,8 @@ func (s *medicineService) DeleteMedicine(id uint) error {
 	return s.medicines.Delete(id)
 }
 
-func (s *medicineService) GetAllMedicines() ([]models.Medicine, error) {
-	return s.medicines.GetAll()
-}
-
-func (s *medicineService) GetInStockMedicines() ([]models.Medicine, error) {
-	return s.medicines.GetInStock()
+func (s *medicineService) ListMedicines(filter repository.MedicineFilter) ([]models.Medicine, error) {
+	return s.medicines.List(filter)
 }
 
 func (s *medicineService) ApplyMedicineUpdate(medicine *models.Medicine, req models.MedicineUpdateRequest) error {
@@ -122,7 +119,7 @@ func (s *medicineService) ApplyMedicineUpdate(medicine *models.Medicine, req mod
 		trimmed := strings.TrimSpace(*req.Name)
 
 		if trimmed == "" {
-			return errors.New("Название лекарства обязательна")
+			return errors.New("название лекарства обязательна")
 		}
 		medicine.Name = trimmed
 	}
@@ -153,7 +150,7 @@ func (s *medicineService) ValidateCreateMedicine(req models.MedicineCreateReques
 	}
 
 	if req.Name == "" {
-		return errors.New("Название лекарства обязательна")
+		return errors.New("название лекарства обязательна")
 	}
 
 	if req.Price <= 0 {

@@ -9,9 +9,9 @@ type Category struct {
 
 type Subcategory struct {
 	gorm.Model
-	CategoryID uint   `json:"category_id"`
-	Name       string `json:"name"`
-	Category   Category `json:"category" gorm:"foreignKey:CategoryID"`
+	CategoryID uint      `json:"category_id" gorm:"not null;index"`
+	Name       string    `json:"name"`
+	Category   *Category `json:"-"`
 }
 
 type CreateCategory struct {
