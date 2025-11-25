@@ -13,6 +13,22 @@ type ReviewHandler struct {
 	service services.ModelService
 }
 
+func (h *ReviewHandler) RegisterRoutes(r *gin.Engine) {
+	reviews := r.Group("/reviews")
+	{
+		reviews.GET("/:id", h.GetByID)
+		reviews.PATCH("/:id", h.UpdateReview)
+		reviews.DELETE("/:id", h.DeleteReview)
+	}
+
+	medicines := r.Group("/medicines/:id")
+	{
+		medicines.POST("/reviews", h.CreateReview)
+		medicines.GET("/reviews", h.ListByMedicineID)
+		medicines.GET("/avg_rating", h.GetAvgRating)
+	}
+}
+
 func NewReviewHandler(service services.ModelService) *ReviewHandler {
 	return &ReviewHandler{service: service}
 }
@@ -138,10 +154,10 @@ func (h *ReviewHandler) GetAvgRating(c *gin.Context) {
 		return
 	}
 
-	reviews, err := h.service.GetAvgRating(uint(medicineID))
+	avg, err := h.service.GetAvgRating(uint(medicineID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, reviews)
+	c.JSON(http.StatusOK, avg)
 }
