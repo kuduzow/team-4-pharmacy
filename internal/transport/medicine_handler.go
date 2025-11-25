@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kuduzow/team-4-pharmacy/internal/models"
+	"github.com/kuduzow/team-4-pharmacy/internal/repository"
 	"github.com/kuduzow/team-4-pharmacy/internal/services"
 	"gorm.io/gorm"
 )
@@ -26,8 +27,7 @@ func (h *MedicineHandler) RegisterRoutes(r *gin.Engine) {
 		medicines.GET("/:id", h.Get)
 		medicines.DELETE("/:id", h.Delete)
 		medicines.PATCH("/:id", h.Update)
-		medicines.GET("", h.GetAll)
-		medicines.GET("/in-stock", h.GetInStock)
+		medicines.GET("", h.List)
 	}
 }
 
@@ -129,20 +129,33 @@ func (h *MedicineHandler) Delete(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (h *MedicineHandler) GetAll(c *gin.Context) {
+func (h *MedicineHandler) List(c *gin.Context) {
+	var filter repository.MedicineFilter
 
-	medicines, err := h.service.GetAllMedicines()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if categoryIDStr := c.Query("category_id"); categoryIDStr != "" {
+		categoryID, err := strconv.ParseUint(categoryIDStr, 10, 64)
+		if err == nil {
+			categoryIDUint := uint(categoryID)
+			filter.CategoryID = &categoryIDUint
+		}
 	}
 
-	c.JSON(http.StatusOK, medicines)
-}
+	if subcategoryIDStr := c.Query("subcategory_id"); subcategoryIDStr != "" {
+		subcategoryID, err := strconv.ParseUint(subcategoryIDStr, 10, 64)
+		if err == nil {
+			subcategoryIDUint := uint(subcategoryID)
+			filter.SubcategoryID = &subcategoryIDUint
+		}
+	}
 
-func (h *MedicineHandler) GetInStock(c *gin.Context) {
-	medicines, err := h.service.GetInStockMedicines()
+	if inStockStr := c.Query("in_stock"); inStockStr != "" {
+		inStock, err := strconv.ParseBool(inStockStr)
+		if err == nil {
+			filter.InStock = &inStock
+		}
+	}
 
+	medicines, err := h.service.ListMedicines(filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -5,6 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type MedicineFilter struct {
+	CategoryID    *uint
+	SubcategoryID *uint
+	InStock       *bool
+}
+
 type MedicineRepository interface {
 	Create(medicine *models.Medicine) error
 
@@ -16,7 +22,7 @@ type MedicineRepository interface {
 
 	GetAll() ([]models.Medicine, error)
 
-	GetInStock() ([]models.Medicine, error)
+	List(filter MedicineFilter) ([]models.Medicine, error)
 }
 
 type gormMedecineRepository struct {
@@ -72,10 +78,24 @@ func (r *gormMedecineRepository) GetAll() ([]models.Medicine, error) {
 	return medicines, nil
 }
 
-func (r *gormMedecineRepository) GetInStock() ([]models.Medicine, error) {
+func (r *gormMedecineRepository) List(filter MedicineFilter) ([]models.Medicine, error) {
 	var medicines []models.Medicine
 
-	if err := r.db.Where("in_stock = ?", true).Find(&medicines).Error; err != nil {
+	query := r.db.Model(&models.Medicine{})
+
+	if filter.CategoryID != nil {
+		query = query.Where("category_id = ?", *filter.CategoryID)
+	}
+
+	if filter.SubcategoryID != nil {
+		query = query.Where("subcategory_id = ?", *filter.SubcategoryID)
+	}
+
+	if filter.InStock != nil {
+		query = query.Where("in_stock = ?", *filter.InStock)
+	}
+
+	if err := query.Find(&medicines).Error; err != nil {
 		return nil, err
 	}
 
