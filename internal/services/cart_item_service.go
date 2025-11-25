@@ -10,7 +10,6 @@ import (
 
 type CartItemService interface {
 	AddItem(userID uint, req models.CartCreateItemRequest) (*models.UpdateCart, error)
-	DeleteItem(userID uint, itemID uint) (*models.UpdateCart, error)
 }
 
 type cartItemService struct {
@@ -104,41 +103,6 @@ func (s *cartItemService) AddItem(userID uint, req models.CartCreateItemRequest)
 	}
 
 	return &models.UpdateCart{
-		UserID:     updatedCart.UserID,
-		Items:      updatedCart.Items,
-		TotalPrice: total,
-	}, nil
-}
-
-func (s *cartItemService) DeleteItem(userID uint, itemID uint) (*models.UpdateCart, error) {
-	_, err := s.itemRepo.GetByID(itemID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrCartItemNotFound
-		}
-		return nil, err
-	}
-
-	if err := s.itemRepo.Delete(itemID); err != nil {
-		return nil, err
-	}
-
-	updatedCart, err := s.cartRepo.GetByUserID(userID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return &models.UpdateCart{UserID: userID, Items: []models.CartItem{}, TotalPrice: 0}, nil
-		}
-		return nil, err
-	}
-
-	var total int64
-	for i := range updatedCart.Items {
-		total += updatedCart.Items[i].LineTotal
-	}
-
-	return &models.UpdateCart{
-		UserID:     updatedCart.UserID,
-		Items:      updatedCart.Items,
-		TotalPrice: total,
+		UserID: updatedCart.UserID,
 	}, nil
 }

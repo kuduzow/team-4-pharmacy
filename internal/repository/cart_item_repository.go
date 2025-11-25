@@ -8,11 +8,13 @@ import (
 type CartItemRepository interface {
 	Create(item *models.CartItem) error
 
-	GetByID(itemID uint) (*models.CartItem, error)
+	GetItemsByCartID(cartID uint) ([]models.CartItem, error)
+
+	GetCartItemByMedID(id uint) (*models.CartItem, error)
 
 	Update(item *models.CartItem) error
 
-	Delete(itemID uint) error
+	Delete(id uint) error
 }
 
 type gormCartItemRepository struct {
@@ -29,15 +31,24 @@ func (r *gormCartItemRepository) Create(item *models.CartItem) error {
 	}
 	return r.db.Create(item).Error
 }
+func (r *gormCartItemRepository) GetCartItemByMedID(medicineID uint) (*models.CartItem, error) {
+	var cartItem models.CartItem
 
-func (r *gormCartItemRepository) GetByID(itemID uint) (*models.CartItem, error) {
-
-	var item models.CartItem
-
-	if err := r.db.First(&item, itemID).Error; err != nil {
+	err := r.db.Where("medicine_id = ?", medicineID).First(&cartItem).Error
+	if err != nil {
 		return nil, err
 	}
-	return &item, nil
+
+	return &cartItem, nil
+}
+func (r *gormCartItemRepository) GetItemsByCartID(cartID uint) ([]models.CartItem, error) {
+
+	var items []models.CartItem
+
+	if err := r.db.Where("cart_id = ?", cartID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 func (r *gormCartItemRepository) Update(item *models.CartItem) error {
@@ -48,6 +59,6 @@ func (r *gormCartItemRepository) Update(item *models.CartItem) error {
 	return r.db.Save(item).Error
 }
 
-func (r *gormCartItemRepository) Delete(itemID uint) error {
-	return r.db.Delete(&models.CartItem{}, itemID).Error
+func (r *gormCartItemRepository) Delete(id uint) error {
+	return r.db.Delete(&models.CartItem{}, id).Error
 }

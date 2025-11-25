@@ -29,9 +29,14 @@ type cartService struct {
 func NewCartService(cartRepo repository.CartRepository) CartService {
 	return &cartService{cartRepo: cartRepo}
 }
-func (s *cartService) Create(userID uint) (*models.Cart, error) {
+func (s *cartService) Create(id uint) (*models.Cart, error) {
+	_, err := s.cartRepo.GetByUserID(id)
+
+	if err == nil {
+		return nil, errors.New("Корзина у пользователя уже существует")
+	}
 	cart := &models.Cart{
-		UserID:     userID,
+		UserID:     id,
 		TotalPrice: 0,
 	}
 	if err := s.cartRepo.Create(cart); err != nil {
@@ -56,9 +61,7 @@ func (s *cartService) GetCart(userID uint) (*models.UpdateCart, error) {
 	}
 
 	updateCart := &models.UpdateCart{
-		UserID:     cart.UserID,
-		Items:      cart.Items,
-		TotalPrice: total,
+		UserID: cart.UserID,
 	}
 
 	return updateCart, nil

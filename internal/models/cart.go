@@ -10,7 +10,5 @@ type Cart struct {
 }
 
 type UpdateCart struct {
-	UserID     uint       `json:"user_id"`
-	Items      []CartItem `json:"items"`
-	TotalPrice int64      `json:"total_price"`
+	UserID uint `json:"user_id"`
 }
