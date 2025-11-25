@@ -23,8 +23,7 @@ func RegisterRoutes(
 	promocodeHandler := NewPromocodeHandler(promocodeService)
 	reviewHandler := NewReviewHandler(&reviewService)
 	UserHandler := NewUserHandler(userService)
-		// нужно добавить КАРТ
-
+	// нужно добавить КАРТ
 
 	categoryHandler.RegisterRoutes(router)
 	medicineHandler.RegisterRoutes(router)
@@ -33,7 +32,6 @@ func RegisterRoutes(
 	promocodeHandler.RegisterRoutes(router)
 	reviewHandler.RegisterRoutes(router)
 	UserHandler.RegisterRoute(router)
-		// нужно добавить КАРТ
-
+	// нужно добавить КАРТ
 
 }
