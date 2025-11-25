@@ -1,14 +1,17 @@
 package models
 
+import "gorm.io/gorm"
+
 type Status string
 
 type Method string
 
 const (
-	Card          Method = "card"
-	Cash          Method = "cash"
-	Online_Wallet Method = "onlineWallet"
+	Card         Method = "card"
+	Cash         Method = "cash"
+	OnlineWallet Method = "online_wallet"
 )
+
 
 const (
 	Pending Status = "pending"
@@ -17,24 +20,24 @@ const (
 )
 
 type Payment struct {
-	gorm.models
+	gorm.Model
 	OrderID int    `json:"order_ID"`
-	Amount   int    `json:"amount"`
-	Status   Status `json:"-"`
-	Method   Method `json:"-"`
-	Paid_at  string `json:"paid_at"`
+	Amount  int    `json:"amount"`
+	Status  Status `json:"-"`
+	Method  Method `json:"-"`
+	PaidAt  string `json:"paid_at"`
 }
 
 type PaymentCreate struct {
 	OrderID int    `json:"order_ID"`
-	Amount   int    `json:"amount"`
-	Status   Status `json:"status"`
-	Method   Method `json:"method"`
-	Paid_at  string `json:"paid_at"`
+	Amount  int    `json:"amount"`
+	Status  Status `json:"status"`
+	Method  Method `json:"method"`
+	PaidAt  string `json:"paid_at"`
 }
 type PaymentUpdate struct {
-	Amount  *int    `json:"amount"`
-	Status  *Status `json:"status"`
-	Method  *Method `json:"method"`
-	Paidat *string `json:"paid_at"`
+	Amount *int    `json:"amount"`
+	Status *Status `json:"status"`
+	Method *Method `json:"method"`
+	PaidAt *string `json:"paid_at"`
 }
