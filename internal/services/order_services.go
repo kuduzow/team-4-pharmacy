@@ -9,6 +9,10 @@ import (
 )
 
 var errOrderNotFound = errors.New("заказ не найден")
+var ErrCartEmpty = errors.New("корзина пуста")
+var ErrInvalidStatusChange = errors.New("некорректный переход статуса")
+var ErrNotEnoughPaid = errors.New("недостаточно средств для завершения оплаты")
+var ErrDeleteRestricted = errors.New("нельзя удалить оплаченный или завершённый заказ")
 
 type OrderService interface {
 	CreateOrder(req models.OrderCreate) (*models.Order, error)
@@ -20,6 +24,7 @@ type OrderService interface {
 type orderService struct {
 	order   repository.OrderRepository
 	payment repository.PaymentRepository
+	user    repository.UserRepository
 }
 
 func NewOrderService(order repository.OrderRepository, payment repository.PaymentRepository) OrderService {
@@ -64,7 +69,7 @@ func (c *orderService) UpdateOrder(id uint, req models.OrderUpdate) (*models.Ord
 		}
 		return nil, err
 	}
-if req.OrderStatus != nil {
+	if req.OrderStatus != nil {
 		order.OrderStatus = *req.OrderStatus
 	}
 	if req.DeliveryAddress != nil {
@@ -90,7 +95,7 @@ func (c *orderService) DeleteOrder(id uint) error {
 	}
 	return c.order.Delete(id)
 }
-func(c *orderService)validateOrderCreate(req models.OrderCreate)error{
+func (c *orderService) validateOrderCreate(req models.OrderCreate) error {
 	if req.UserID == 0 {
 		return errors.New("UserID")
 	}
