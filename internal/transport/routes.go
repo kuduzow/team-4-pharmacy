@@ -12,18 +12,18 @@ func RegisterRoutes(
 	// orderService services.OrderService,   - хамзат доделает
 	paymentService services.PaymentService,
 	promocodeService services.PromocodeService,
-	reviewService services.ReviewService,
+	reviewService services.ModelService,
 	userService services.UserService,
-	// нужно добавить КАРТ
+	// нужно добавить КАРТ - усман
 ) {
 	categoryHandler := NewCategoryHandler(categoryService)
 	medicineHandler := NewMedicineHandler(medicineService)
 	// orderHandler := NewOrderHandler(orderService)  - хамзат доделает
 	paymentHandler := NewPaymentHandler(paymentService)
 	promocodeHandler := NewPromocodeHandler(promocodeService)
-	reviewHandler := NewReviewHandler(&reviewService)
+	reviewHandler := NewReviewHandler(reviewService)
 	UserHandler := NewUserHandler(userService)
-		// нужно добавить КАРТ
+		// нужно добавить КАРТ - усман
 
 
 	categoryHandler.RegisterRoutes(router)
@@ -33,7 +33,7 @@ func RegisterRoutes(
 	promocodeHandler.RegisterRoutes(router)
 	reviewHandler.RegisterRoutes(router)
 	UserHandler.RegisterRoute(router)
-		// нужно добавить КАРТ
+		// нужно добавить КАРТ - усман
 
 
 }
