@@ -32,7 +32,7 @@ func RegisterRoutes(
 	paymentHandler.RegisterRoute(router)
 	promocodeHandler.RegisterRoutes(router)
 	reviewHandler.RegisterRoutes(router)
-	UserHandler.RegisterRoute(router)
+	userHandler.RegisterRoute(router)
 		// нужно добавить КАРТ - усман
 
 

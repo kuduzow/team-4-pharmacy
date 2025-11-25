@@ -1,18 +1,20 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/kuduzow/team-4-pharmacy/internal/models"
 	"gorm.io/gorm"
 )
 
 type CartRepository interface {
-	Create(item *models.CartItem) error
+	Create(cart *models.Cart) error
 
-	GetByID(itemID uint) (*models.CartItem, error)
+	GetByUserID(userID uint) (*models.Cart, error)
 
-	Update(item *models.CartItem) error
+	ClearByUserID(userID uint) error
 
-	Delete(itemID uint) error
+	GetItemsByCartID(cartID uint) ([]models.CartItem, error)
 }
 
 type gormCartRepository struct {
@@ -23,28 +25,39 @@ func NewCartRepository(db *gorm.DB) CartRepository {
 	return &gormCartRepository{db: db}
 }
 
-func (r *gormCartRepository) Create(item *models.CartItem) error {
-	if item == nil {
-		return nil
-	}
-	return r.db.Create(item).Error
+func (r *gormCartRepository) Create(cart *models.Cart) error {
+	return r.db.Create(cart).Error
 }
 
-func (r *gormCartRepository) GetByID(itemID uint) (*models.CartItem, error) {
-	var item models.CartItem
-	if err := r.db.First(&item, itemID).Error; err != nil {
+func (r *gormCartRepository) GetByUserID(userID uint) (*models.Cart, error) {
+
+	var cart models.Cart
+
+	if err := r.db.Preload("Items").Where("user_id = ?", userID).First(&cart).Error; err != nil {
 		return nil, err
 	}
-	return &item, nil
+	return &cart, nil
 }
 
-func (r *gormCartRepository) Update(item *models.CartItem) error {
-	if item == nil {
-		return nil
+func (r *gormCartRepository) ClearByUserID(userID uint) error {
+
+	var cart models.Cart
+
+	if err := r.db.Where("user_id = ?", userID).First(&cart).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return err
 	}
-	return r.db.Save(item).Error
+	return r.db.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{}).Error
 }
 
-func (r *gormCartRepository) Delete(itemID uint) error {
-	return r.db.Delete(&models.CartItem{}, itemID).Error
+func (r *gormCartRepository) GetItemsByCartID(cartID uint) ([]models.CartItem, error) {
+
+	var items []models.CartItem
+
+	if err := r.db.Where("cart_id = ?", cartID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	return items, nil
 }

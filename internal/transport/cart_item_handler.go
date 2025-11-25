@@ -1,0 +1,96 @@
+package transport
+
+import (
+	"errors"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/kuduzow/team-4-pharmacy/internal/models"
+	"github.com/kuduzow/team-4-pharmacy/internal/services"
+)
+
+type CartItemHandler struct {
+	service services.CartItemService
+}
+
+func NewCartItemHandler(service services.CartItemService) *CartItemHandler {
+	return &CartItemHandler{service: service}
+}
+
+func (h *CartItemHandler) RegisterRoutes(r *gin.Engine) {
+	items := r.Group("/users/:id/cart/items")
+	{
+		items.POST("", h.AddItem)
+		items.DELETE(":item_id", h.DeleteItem)
+	}
+}
+
+func (h *CartItemHandler) AddItem(c *gin.Context) {
+	userIDStr := c.Param("id")
+	if userIDStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id обязателен"})
+		return
+	}
+
+	id, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "недействительный user_id"})
+		return
+	}
+
+	var req models.CartCreateItemRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "недействительный JSON"})
+		return
+	}
+
+	updated, err := h.service.AddItem(uint(id), req)
+	if err != nil {
+		if errors.Is(err, services.ErrInvalidQuantity) || errors.Is(err, services.ErrOutOfStock) || errors.Is(err, services.ErrMedicineMissing) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, updated)
+}
+
+func (h *CartItemHandler) DeleteItem(c *gin.Context) {
+	userIDStr := c.Param("id")
+	if userIDStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id обязателен"})
+		return
+	}
+
+	uid, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "недействительный user_id"})
+		return
+	}
+
+	idStr := c.Param("id")
+	itemIDStr := c.Param("item_id")
+	if itemIDStr == "" {
+		itemIDStr = idStr
+	}
+	itemID, err := strconv.ParseUint(itemIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "недействительный item id"})
+		return
+	}
+
+	updated, err := h.service.DeleteItem(uint(uid), uint(itemID))
+	if err != nil {
+		if errors.Is(err, services.ErrCartItemNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, updated)
+}
