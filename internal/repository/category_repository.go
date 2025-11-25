@@ -13,6 +13,10 @@ type CategoryRepository interface {
 	CreateSubcategory(subcategory *models.Subcategory) error
 
 	GetSubcategoriesByCategoryID(categoryID uint) ([]models.Subcategory, error)
+
+	GetCategoryByID(id uint) (*models.Category, error)
+
+	GetSubcategoryByID(id uint) (*models.Subcategory, error)
 }
 
 type gormCategoryRepository struct {
@@ -58,4 +62,20 @@ func (r *gormCategoryRepository) GetSubcategoriesByCategoryID(categoryID uint) (
 	}
 
 	return subcategories, nil
+}
+
+func (r *gormCategoryRepository) GetCategoryByID(id uint) (*models.Category, error) {
+	var category models.Category
+	if err := r.db.First(&category, id).Error; err != nil {
+		return nil, err
+	}
+	return &category, nil
+}
+
+func (r *gormCategoryRepository) GetSubcategoryByID(id uint) (*models.Subcategory, error) {
+	var subcategory models.Subcategory
+	if err := r.db.First(&subcategory, id).Error; err != nil {
+		return nil, err
+	}
+	return &subcategory, nil
 }
