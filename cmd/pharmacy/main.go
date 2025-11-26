@@ -26,7 +26,7 @@ func main() {
 	); err != nil {
 		log.Fatalf("не удалось мигрировать: %v ", err)
 	}
-	// cartRepo := repository.NewCartRepository(db) - не доделан - усман доделает
+	cartRepo := repository.NewCartRepository(db)
 	categoryRepo := repository.NewCategoryRepository(db)
 	medicineRepo := repository.NewMedicineRepository(db)
 	// orderRepo := repository.NewOrderRepository(db) - хамзат доделает
@@ -35,8 +35,8 @@ func main() {
 	reviewRepo := repository.NewReviewRepository(db)
 	userRepo := repository.NewUserRepository(db)
 
-	// cartService := services.NewCartService - не доделан - усман доделает
- 	// orderService := services.NewOrderService(orderRepo, paymentRepo) - хамзат доделает
+	cartService := services.NewCartService(cartRepo)
+	// orderService := services.NewOrderService(orderRepo, paymentRepo) - хамзат доделает
 	categoryService := services.NewCategoryService(categoryRepo)
 	medicineService := services.NewMedicineService(medicineRepo, categoryRepo)
 
@@ -51,12 +51,12 @@ func main() {
 		router,
 		categoryService,
 		medicineService,
-		// cartService, усман доделает
 		// orderService, хамзат доделает
 		paymentService,
 		promocodeService,
 		reviewService,
 		userService,
+		cartService,
 	)
 
 	if err := router.Run(); err != nil {
