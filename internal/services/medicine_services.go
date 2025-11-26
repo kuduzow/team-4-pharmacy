@@ -131,10 +131,16 @@ func (s *medicineService) ApplyMedicineUpdate(medicine *models.Medicine, req mod
 		medicine.Price = *req.Price
 	}
 
-	inStock := *req.StockQuantity > 0
+	if req.StockQuantity != nil {
+		if *req.StockQuantity < 0 {
+			return errors.New("количество на складе не должно быть отрицательным")
+		}
+		medicine.StockQuantity = *req.StockQuantity
+		medicine.InStock = *req.StockQuantity > 0
+	}
 
 	if req.InStock != nil {
-		medicine.InStock = inStock
+		medicine.InStock = *req.InStock
 	}
 
 	return nil
