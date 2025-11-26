@@ -23,9 +23,9 @@ func (h *PaymentHandler) RegisterRoutes(r *gin.Engine) {
 	{
 
 		payments.POST("", h.Create)
-		payments.GET("", h.Get)
-		payments.PATCH("", h.Update)
-		payments.DELETE("", h.Delete)
+		payments.GET("/:id", h.Get)
+		payments.PATCH("/:id", h.Update)
+		payments.DELETE("/:id", h.Delete)
 	}
 }
 func (h *PaymentHandler) Create(c *gin.Context) {
