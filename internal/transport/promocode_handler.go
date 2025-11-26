@@ -24,10 +24,10 @@ func NewPromocodeHandler(
 func (h *PromocodeHandler) RegisterRoutes(r *gin.Engine) {
 	promocodes := r.Group("/promocodes")
 	{
-		promocodes.POST("")
-		promocodes.GET("")
-		promocodes.PATCH("/:id")
-		promocodes.DELETE("/:id")
+		promocodes.POST("", h.Create)
+		promocodes.GET("", h.GetAll)
+		promocodes.PATCH("/:id", h.Update)
+		promocodes.DELETE("/:id", h.Delete)
 	}
 }
 
