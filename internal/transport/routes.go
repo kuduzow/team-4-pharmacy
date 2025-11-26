@@ -32,6 +32,6 @@ func RegisterRoutes(
 	promocodeHandler.RegisterRoutes(router)
 	reviewHandler.RegisterRoutes(router)
 	userHandler.RegisterRoutes(router)
-	// нужно добавить КАРТ - усман
+	cartHandler.RegisterRoutes(router)
 
 }
