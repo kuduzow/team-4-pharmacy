@@ -62,4 +62,5 @@ func main() {
 	if err := router.Run(); err != nil {
 		log.Fatalf("не удалось запустить HTTP-сервер: %v", err)
 	}
+	
 }
