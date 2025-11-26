@@ -13,6 +13,7 @@ import (
 
 type OrderHandler struct {
 	service services.OrderService
+	user    services.UserService
 }
 
 func NewOrderHandler(service services.OrderService) *OrderHandler {
@@ -23,13 +24,10 @@ func (h *OrderHandler) RegisterRoute(r *gin.Engine) {
 	orders := r.Group("/order")
 	{
 		orders.GET("/:id", h.Get)
-		orders.PATCH("/:id/status",h.Update)
-	}
-	users := r.Group("/users")
-	{
-		users.POST("/:id/orders")
-		users.GET("/:id/orders")
-		users.PATCH("/:id/status")
+		orders.PATCH("/:id", h.Update)
+		orders.DELETE("/:id", h.Delete)
+		orders.POST("", h.Create)
+
 	}
 }
 func (h *OrderHandler) Get(c *gin.Context) {
@@ -57,22 +55,54 @@ func (h *OrderHandler) Update(c *gin.Context) {
 
 	id, err := strconv.ParseUint(idStr, 10, 61)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	var req models.OrderUpdate
-	if err := c.ShouldBindJSON(&req);err != nil{
-		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	order , err := h.service.UpdateOrder(uint(id),req)
-	if err != nil{
-		if errors.Is(err,gorm.ErrRecordNotFound){
-			c.JSON(http.StatusNotFound,gin.H{"error":err.Error()})
+	order, err := h.service.UpdateOrder(uint(id), req)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK,order)
+	c.JSON(http.StatusOK, order)
+}
+func (h *OrderHandler) Delete(c *gin.Context) {
+	idStr := c.Param("id")
+
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.service.DeleteOrder(uint(id)); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+}
+func (h *OrderHandler) Create(c *gin.Context) {
+	var req models.OrderCreate
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	order, err := h.service.CreateOrder(req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, order)
 }
