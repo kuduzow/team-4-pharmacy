@@ -9,7 +9,7 @@ func RegisterRoutes(
 	router *gin.Engine,
 	categoryService services.CategoryService,
 	medicineService services.MedicineService,
-	// orderService services.OrderService,   - хамзат доделает
+	orderService services.OrderService,
 	paymentService services.PaymentService,
 	promocodeService services.PromocodeService,
 	reviewService services.ModelService,
@@ -18,7 +18,7 @@ func RegisterRoutes(
 ) {
 	categoryHandler := NewCategoryHandler(categoryService)
 	medicineHandler := NewMedicineHandler(medicineService)
-	// orderHandler := NewOrderHandler(orderService)  - хамзат доделает
+	orderHandler := NewOrderHandler(orderService)
 	paymentHandler := NewPaymentHandler(paymentService)
 	promocodeHandler := NewPromocodeHandler(promocodeService)
 	reviewHandler := NewReviewHandler(reviewService)
@@ -27,7 +27,7 @@ func RegisterRoutes(
 
 	categoryHandler.RegisterRoutes(router)
 	medicineHandler.RegisterRoutes(router)
-	// orderHandler.RegisterRoutes(router)   - хамзат доделает
+	orderHandler.RegisterRoute(router)
 	paymentHandler.RegisterRoutes(router)
 	promocodeHandler.RegisterRoutes(router)
 	reviewHandler.RegisterRoutes(router)
