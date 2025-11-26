@@ -10,7 +10,7 @@ import (
 )
 
 func SetUpDatabaseConnection() *gorm.DB {
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
