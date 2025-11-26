@@ -18,10 +18,10 @@ func NewUserHandler(service services.UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
-func (h *UserHandler) RegisterRoute(r *gin.Engine) {
+func (h *UserHandler) RegisterRoutes(r *gin.Engine) {
 	users := r.Group("/users")
 	{
-		users.GET("/", h.Get)
+		users.GET("/:id", h.Get)
 		users.GET("/", h.GetAll)
 		users.POST("/", h.Create)
 		users.PATCH("/:id", h.Update)
