@@ -29,14 +29,14 @@ func main() {
 	cartRepo := repository.NewCartRepository(db)
 	categoryRepo := repository.NewCategoryRepository(db)
 	medicineRepo := repository.NewMedicineRepository(db)
-	// orderRepo := repository.NewOrderRepository(db) - хамзат доделает
+	orderRepo := repository.NewOrderRepository(db)
 	paymentRepo := repository.NewPaymentRepository(db)
 	promocodeRepo := repository.NewPromocodeRepository(db)
 	reviewRepo := repository.NewReviewRepository(db)
 	userRepo := repository.NewUserRepository(db)
 
 	cartService := services.NewCartService(cartRepo)
-	// orderService := services.NewOrderService(orderRepo, paymentRepo) - хамзат доделает
+	orderService := services.NewOrderService(orderRepo, paymentRepo)
 	categoryService := services.NewCategoryService(categoryRepo)
 	medicineService := services.NewMedicineService(medicineRepo, categoryRepo)
 
@@ -51,7 +51,7 @@ func main() {
 		router,
 		categoryService,
 		medicineService,
-		// orderService, хамзат доделает
+		orderService,
 		paymentService,
 		promocodeService,
 		reviewService,
