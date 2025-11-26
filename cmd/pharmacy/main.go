@@ -16,6 +16,7 @@ func main() {
 
 	if err := db.AutoMigrate(
 		&models.Cart{},
+		&models.CartItem{},
 		&models.Category{},
 		&models.Medicine{},
 		&models.Order{},
