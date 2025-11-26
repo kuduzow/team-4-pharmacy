@@ -28,10 +28,10 @@ func RegisterRoutes(
 	categoryHandler.RegisterRoutes(router)
 	medicineHandler.RegisterRoutes(router)
 	// orderHandler.RegisterRoutes(router)   - хамзат доделает
-	paymentHandler.RegisterRoute(router)
+	paymentHandler.RegisterRoutes(router)
 	promocodeHandler.RegisterRoutes(router)
 	reviewHandler.RegisterRoutes(router)
-	userHandler.RegisterRoute(router)
-	cartHandler.RegisterRoutes(router)
+	userHandler.RegisterRoutes(router)
+	// нужно добавить КАРТ - усман
 
 }
