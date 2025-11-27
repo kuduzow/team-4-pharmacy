@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrPaymentNotFound = errors.New("Оплата Не найден")
+var ErrPaymentNotFound = errors.New("оплата Не найден")
 
 type PaymentService interface {
 	CreatePayment(req models.PaymentCreate) (*models.Payment, error)

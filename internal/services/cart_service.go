@@ -33,7 +33,7 @@ func (s *cartService) Create(id uint) (*models.Cart, error) {
 	_, err := s.cartRepo.GetByUserID(id)
 
 	if err == nil {
-		return nil, errors.New("Корзина у пользователя уже существует")
+		return nil, errors.New("корзина у пользователя уже существует")
 	}
 	cart := &models.Cart{
 		UserID:     id,

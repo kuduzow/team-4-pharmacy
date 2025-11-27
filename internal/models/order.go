@@ -33,7 +33,6 @@ type OrderItem struct {
 }
 
 type OrderCreate struct {
-	
 	UserID          uint        `json:"user_id"`
 	OrderStatus     OrderStatus `json:"order_status"`
 	TotalPrice      int         `json:"total_price"`
@@ -43,7 +42,6 @@ type OrderCreate struct {
 	Comment         string      `json:"comment"`
 }
 type OrderUpdate struct {
-	
 	UserID          *uint        `json:"user_id"`
 	OrderStatus     *OrderStatus `json:"order_status"`
 	TotalPrice      *int         `json:"total_price"`

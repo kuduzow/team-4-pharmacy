@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var ReviewNotFound = errors.New("Not Found")
+var ErrReviewNotFound = errors.New("not Found")
 
 type ModelService interface {
 	CreateReview(req models.ReviewForPost) (*models.Review, error)
@@ -50,7 +50,7 @@ func (s *ReviewService) UpdateReview(id uint, req models.ReviewForUpdate) (*mode
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ReviewNotFound
+			return nil, ErrReviewNotFound
 		}
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (s *ReviewService) DeleteReview(id uint) error {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ReviewNotFound
+			return ErrReviewNotFound
 		}
 		return err
 	}
@@ -116,7 +116,7 @@ func (s *ReviewService) GetByID(id uint) (*models.Review, error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ReviewNotFound
+			return nil, ErrReviewNotFound
 		}
 		return nil, err
 	}

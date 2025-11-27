@@ -1,0 +1,51 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+
+cmd = "go build -o ./tmp/pharmacy ./cmd/pharmacy"
+
+bin = "./tmp/pharmacy"
+
+full_bin = "./tmp/pharmacy"
+
+delay = 1000
+
+include_ext = ["go"]
+
+stop_on_error = true
+
+exclude_dir = [
+    "tmp",
+    "vendor",
+    "testdata",
+    ".git"
+]
+
+exclude_regex = [
+    "_test.go"
+]
+
+send_interrupt = true
+
+kill_delay = "500ms"
+
+[log]
+
+time = false
+
+[color]
+
+app = "green"
+build = "yellow"
+main = "magenta"
+runner = "cyan"
+watcher = "blue"
+
+[misc]
+
+clean_on_exit = true
+
+[screen]
+
+clear_on_rebuild = false

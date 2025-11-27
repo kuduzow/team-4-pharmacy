@@ -69,4 +69,3 @@ func (r *gormPromocodeRepository) GetByID(id uint) (*models.Promocode, error) {
 
 	return &promocode, nil
 }
-
