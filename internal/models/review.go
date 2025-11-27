@@ -13,13 +13,13 @@ type Review struct {
 }
 
 type ReviewForPost struct {
-    UserID     uint   `json:"user_id" binding:"required"`
-    MedicineID uint   `json:"medicine_id" binding:"required"`
-    Rating     uint   `json:"rating" binding:"required,min=1,max=5"`
-    Text       string `json:"text" binding:"required"`
+	UserID     uint   `json:"user_id" binding:"required"`
+	MedicineID uint   `json:"medicine_id" binding:"required"`
+	Rating     uint   `json:"rating" binding:"required,min=1,max=5"`
+	Text       string `json:"text" binding:"required"`
 }
 
 type ReviewForUpdate struct {
-    Rating *uint   `json:"rating" binding:"omitempty,min=1,max=5"`
-    Text   *string `json:"text" binding:"omitempty"`
+	Rating *uint   `json:"rating" binding:"omitempty,min=1,max=5"`
+	Text   *string `json:"text" binding:"omitempty"`
 }

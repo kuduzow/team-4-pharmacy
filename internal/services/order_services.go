@@ -24,7 +24,6 @@ type OrderService interface {
 type orderService struct {
 	order   repository.OrderRepository
 	payment repository.PaymentRepository
-	user    repository.UserRepository
 }
 
 func NewOrderService(order repository.OrderRepository, payment repository.PaymentRepository) OrderService {

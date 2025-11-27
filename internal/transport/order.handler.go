@@ -13,7 +13,6 @@ import (
 
 type OrderHandler struct {
 	service services.OrderService
-	user    services.UserService
 }
 
 func NewOrderHandler(service services.OrderService) *OrderHandler {

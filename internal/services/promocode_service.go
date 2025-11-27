@@ -2,10 +2,10 @@ package services
 
 import (
 	"errors"
-	"strings"
 	"github.com/kuduzow/team-4-pharmacy/internal/models"
 	"github.com/kuduzow/team-4-pharmacy/internal/repository"
 	"gorm.io/gorm"
+	"strings"
 )
 
 var ErrPromocodeNotFound = errors.New("промокод не найден")
