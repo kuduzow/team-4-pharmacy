@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log/slog"
 	"strings"
 
 	"github.com/kuduzow/team-4-pharmacy/internal/models"
@@ -23,38 +24,60 @@ type CategoryService interface {
 
 type categoryService struct {
 	categories repository.CategoryRepository
+	logger     *slog.Logger
 }
 
 func NewCategoryService(categories repository.CategoryRepository) CategoryService {
+	logger := slog.Default()
 	return &categoryService{
 		categories: categories,
+		logger:     logger,
 	}
 }
 
 func (s *categoryService) CreateCategory(req models.CreateCategory) (*models.Category, error) {
+	s.logger.Info("category_service.CreateCategory: creating category", slog.String("name", req.Name))
+
 	if err := s.validateCategoryCreate(req); err != nil {
+		s.logger.Error("category_service.CreateCategory: validation failed", slog.String("error", err.Error()))
 		return nil, err
 	}
+
 	category := &models.Category{
 		Name: strings.TrimSpace(req.Name),
 	}
+
 	if err := s.categories.Create(category); err != nil {
+		s.logger.Error("category_service.CreateCategory: failed to create category", slog.String("error", err.Error()))
 		return nil, err
 	}
+
+	s.logger.Info("category_service.CreateCategory: category created successfully", slog.Uint64("id", uint64(category.ID)))
 	return category, nil
 }
 
 func (s *categoryService) GetAll() ([]models.Category, error) {
-	return s.categories.GetAll()
+	s.logger.Info("category_service.GetAll: fetching all categories")
+	categories, err := s.categories.GetAll()
+	if err != nil {
+		s.logger.Error("category_service.GetAll: failed to fetch categories", slog.String("error", err.Error()))
+		return nil, err
+	}
+	s.logger.Info("category_service.GetAll: categories fetched successfully", slog.Int("count", len(categories)))
+	return categories, nil
 }
 
 func (s *categoryService) CreateSubcategory(req models.CreateSubcategory) (*models.Subcategory, error) {
+	s.logger.Info("category_service.CreateSubcategory: creating subcategory", slog.String("name", req.Name), slog.Uint64("category_id", uint64(req.CategoryID)))
+
 	if err := s.validateSubcategoryCreate(req); err != nil {
+		s.logger.Error("category_service.CreateSubcategory: validation failed", slog.String("error", err.Error()))
 		return nil, err
 	}
 
 	categories, err := s.categories.GetAll()
 	if err != nil {
+		s.logger.Error("category_service.CreateSubcategory: failed to fetch categories", slog.String("error", err.Error()))
 		return nil, err
 	}
 
@@ -67,6 +90,7 @@ func (s *categoryService) CreateSubcategory(req models.CreateSubcategory) (*mode
 	}
 
 	if !found {
+		s.logger.Error("category_service.CreateSubcategory: category not found", slog.Uint64("category_id", uint64(req.CategoryID)))
 		return nil, ErrCategoryNotFound
 	}
 
@@ -76,23 +100,30 @@ func (s *categoryService) CreateSubcategory(req models.CreateSubcategory) (*mode
 	}
 
 	if err := s.categories.CreateSubcategory(sub); err != nil {
+		s.logger.Error("category_service.CreateSubcategory: failed to create subcategory", slog.String("error", err.Error()))
 		return nil, err
 	}
 
+	s.logger.Info("category_service.CreateSubcategory: subcategory created successfully", slog.Uint64("id", uint64(sub.ID)))
 	return sub, nil
 }
 
 func (s *categoryService) GetSubcategoriesByCategoryID(CategoryID uint) ([]models.Subcategory, error) {
+	s.logger.Info("category_service.GetSubcategoriesByCategoryID: fetching subcategories", slog.Uint64("category_id", uint64(CategoryID)))
+
 	subs, err := s.categories.GetSubcategoriesByCategoryID(CategoryID)
 	if err != nil {
+		s.logger.Error("category_service.GetSubcategoriesByCategoryID: failed to fetch subcategories", slog.String("error", err.Error()))
 		return nil, err
 	}
 
+	s.logger.Info("category_service.GetSubcategoriesByCategoryID: subcategories fetched successfully", slog.Uint64("category_id", uint64(CategoryID)), slog.Int("count", len(subs)))
 	return subs, nil
 }
 
 func (s *categoryService) validateCategoryCreate(req models.CreateCategory) error {
 	if strings.TrimSpace(req.Name) == "" {
+		s.logger.Warn("category_service.validateCategoryCreate: empty name provided")
 		return errors.New("поле name не должно быть пустым")
 	}
 	return nil

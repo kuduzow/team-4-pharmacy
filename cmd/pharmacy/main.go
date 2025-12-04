@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"log/slog"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kuduzow/team-4-pharmacy/internal/config"
@@ -12,6 +13,9 @@ import (
 )
 
 func main() {
+
+	logger := setupLogger()
+
 	db := config.SetUpDatabaseConnection()
 
 	if err := db.AutoMigrate(
@@ -25,7 +29,8 @@ func main() {
 		&models.Review{},
 		&models.User{},
 	); err != nil {
-		log.Fatalf("не удалось мигрировать: %v ", err)
+		logger.Error("не удалось мигрировать базу данных", slog.Any("error", err))
+		os.Exit(1)
 	}
 	cartRepo := repository.NewCartRepository(db)
 	categoryRepo := repository.NewCategoryRepository(db)
@@ -60,7 +65,53 @@ func main() {
 		cartService,
 	)
 
-	if err := router.Run(); err != nil {
-		log.Fatalf("не удалось запустить HTTP-сервер: %v", err)
+	addr := getServerAddress()
+	env := getEnvironment()
+	logger.Info("сервер запустился",
+		slog.String("addr", addr),
+		slog.String("env", env),
+	)
+	if err := router.Run(addr); err != nil {
+		logger.Error("не удалось запустить HTTP-сервер", slog.Any("error", err))
+		os.Exit(1)
 	}
+}
+func setupLogger() *slog.Logger {
+	var level slog.Level
+	logLevel := os.Getenv("LOG_LEVEL")
+
+	switch logLevel {
+	case "debug":
+		level = slog.LevelDebug
+	case "info":
+		level = slog.LevelInfo
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	default:
+		level = slog.LevelInfo
+	}
+
+	return slog.New(
+		slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: level,
+		}),
+	)
+}
+
+func getServerAddress() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	return ":" + port
+}
+
+func getEnvironment() string {
+	env := os.Getenv("ENVIRONMENT")
+	if env == "" {
+		env = "local"
+	}
+	return env
 }
