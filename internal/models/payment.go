@@ -12,7 +12,6 @@ const (
 	OnlineWallet Method = "online_wallet"
 )
 
-
 const (
 	Pending Status = "pending"
 	Succes  Status = "succes"

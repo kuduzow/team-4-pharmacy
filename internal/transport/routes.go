@@ -1,6 +1,8 @@
 package transport
 
 import (
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
 	"github.com/kuduzow/team-4-pharmacy/internal/services"
 )
@@ -14,6 +16,7 @@ func RegisterRoutes(
 	promocodeService services.PromocodeService,
 	reviewService services.ModelService,
 	userService services.UserService,
+	logger *slog.Logger,
 	cartService services.CartService,
 ) {
 	categoryHandler := NewCategoryHandler(categoryService)
@@ -22,7 +25,7 @@ func RegisterRoutes(
 	paymentHandler := NewPaymentHandler(paymentService)
 	promocodeHandler := NewPromocodeHandler(promocodeService)
 	reviewHandler := NewReviewHandler(reviewService)
-	userHandler := NewUserHandler(userService)
+	userHandler := NewUserHandler(logger, userService)
 	cartHandler := NewCartHandler(cartService)
 
 	categoryHandler.RegisterRoutes(router)

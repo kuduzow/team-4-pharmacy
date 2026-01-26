@@ -18,7 +18,7 @@ var (
 
 type CartService interface {
 	Create(userID uint) (*models.Cart, error)
-	GetCart(userID uint) (*models.UpdateCart, error)
+	GetCart(userID uint) (*models.Cart, error)
 	ClearCart(userID uint) error
 }
 
@@ -33,7 +33,7 @@ func (s *cartService) Create(id uint) (*models.Cart, error) {
 	_, err := s.cartRepo.GetByUserID(id)
 
 	if err == nil {
-		return nil, errors.New("Корзина у пользователя уже существует")
+		return nil, errors.New("корзина у пользователя уже существует")
 	}
 	cart := &models.Cart{
 		UserID:     id,
@@ -45,8 +45,7 @@ func (s *cartService) Create(id uint) (*models.Cart, error) {
 	return cart, nil
 }
 
-func (s *cartService) GetCart(userID uint) (*models.UpdateCart, error) {
-
+func (s *cartService) GetCart(userID uint) (*models.Cart, error) {
 	cart, err := s.cartRepo.GetByUserID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -60,11 +59,9 @@ func (s *cartService) GetCart(userID uint) (*models.UpdateCart, error) {
 		total += cart.Items[i].LineTotal
 	}
 
-	updateCart := &models.UpdateCart{
-		UserID: cart.UserID,
-	}
+	cart.TotalPrice = total
 
-	return updateCart, nil
+	return cart, nil
 }
 
 func (s *cartService) ClearCart(userID uint) error {

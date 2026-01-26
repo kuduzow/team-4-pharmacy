@@ -1,0 +1,14 @@
+clean_on_exit = true
+
+[build]
+cmd = "go build -o .\\tmp\\pharmacy.exe .\\cmd\\pharmacy"
+bin = ".\\tmp\\pharmacy.exe"
+
+pre_cmd = ["powershell -Command \"if (Test-Path .\\tmp\\pharmacy.exe) { Remove-Item .\\tmp\\pharmacy.exe -Force }\""]
+
+include_ext = ["go", "mod", "sum"]
+exclude_dir = ["tmp", "vendor"]
+
+stop_on_error = true
+delay = 1000
+
